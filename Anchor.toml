@@ -1,10 +1,11 @@
 [toolchain]
 
 [features]
-seeds = false
+resolution = true
 skip-lint = false
 
 [programs.localnet]
+stake_tokens = "FgvwGsuM8vVPxa7ZEdwkeGZdK2UXv3N1UVFMoWwJn8aC"
 stellus_task_staking = "EyEga9U4hdHnA2KihSjiDqupNTfvjenbqAbqdjeVtMQq"
 
 [registry]
@@ -12,7 +13,21 @@ url = "https://api.apr.dev"
 
 [provider]
 cluster = "Localnet"
-wallet = "/home/arshilhapani/.config/solana/id.json"
+wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+test = "bun run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+
+[test]
+startup_wait = 5000
+shutdown_wait = 2000
+upgradeable = false
+
+[test.validator]
+bind_address = "0.0.0.0"
+url = "https://api.mainnet-beta.solana.com"
+ledger = ".anchor/test-ledger"
+rpc_port = 8899
+
+[[test.validator.clone]]
+address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
