@@ -5,6 +5,11 @@ import { assert } from "chai";
 
 import { StellusTaskStaking } from "../target/types/stellus_task_staking";
 import keypair from "../utils/privateKey";
+import {
+  createAndMintToken,
+  createMintToken,
+  transferTokens,
+} from "../utils/helpers";
 
 //////////////////////////////////////////////////
 ///////// HELPER CONSTANTS AND FUNCTIONS /////////
@@ -22,35 +27,6 @@ const metadata = {
   symbol: "ITW",
   uri: "https://bafkreic6kmxp2ndrkns3plteriluxpezhu53m736fskdjr5cisxn2yfxm4.ipfs.flk-ipfs.xyz",
 };
-
-async function createMintToken(mintKeyPair: Keypair) {
-  await program.methods
-    .createTokenMint(0, metadata.name, metadata.symbol, metadata.uri)
-    .accounts({
-      payer: payer.publicKey,
-      mintAccount: mintKeyPair.publicKey,
-    })
-    .signers([mintKeyPair])
-    .rpc();
-}
-
-async function createAndMintToken(
-  mintKeyPair: Keypair,
-  ata: anchor.web3.PublicKey,
-  mintAmount: anchor.BN
-) {
-  await createMintToken(mintKeyPair);
-  await program.methods
-    .mintToken(mintAmount)
-    .accounts({
-      mintAuthority: payer.publicKey,
-      recipient: payer.publicKey,
-      mintAccount: mintKeyPair.publicKey,
-      // @ts-ignore
-      associatedTokenAccount: ata,
-    })
-    .rpc();
-}
 
 //////////////////////////////////////////////////
 ///////////////////// TESTS /////////////////////
@@ -160,6 +136,38 @@ describe("Create token", function () {
         recipientTokenAddress
       );
 
+    assert.equal(senderBalance.value.uiAmount, 900);
+    assert.equal(recipientBalance.value.uiAmount, 100);
+  });
+
+  it("Should transfer token using functions", async function () {
+    const mintKeyPair = Keypair.generate();
+    const recipientKeyPair = Keypair.generate();
+    const senderTokenAddress = getAssociatedTokenAddressSync(
+      mintKeyPair.publicKey,
+      payer.publicKey
+    );
+    const recipientTokenAddress = getAssociatedTokenAddressSync(
+      mintKeyPair.publicKey,
+      recipientKeyPair.publicKey
+    );
+    await createAndMintToken(mintKeyPair, senderTokenAddress, mintAmount);
+    const transferAmount = new anchor.BN(100);
+    await transferTokens(
+      mintKeyPair,
+      recipientKeyPair,
+      senderTokenAddress,
+      recipientTokenAddress,
+      transferAmount
+    );
+    const senderBalance =
+      await program.provider.connection.getTokenAccountBalance(
+        senderTokenAddress
+      );
+    const recipientBalance =
+      await program.provider.connection.getTokenAccountBalance(
+        recipientTokenAddress
+      );
     assert.equal(senderBalance.value.uiAmount, 900);
     assert.equal(recipientBalance.value.uiAmount, 100);
   });
