@@ -5,14 +5,14 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-stake_tokens = "FgvwGsuM8vVPxa7ZEdwkeGZdK2UXv3N1UVFMoWwJn8aC"
-stellus_task_staking = "EyEga9U4hdHnA2KihSjiDqupNTfvjenbqAbqdjeVtMQq"
+stake_tokens = "GwrUWvcWzD1XqPgWVji188Ae3xFJD2Voca8CxhHt5Sam"
+stellus_task_staking = "3VVn1VWfU5nrJzfeNbNGVC8nxAghDcn63A3mebvjQGd9"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

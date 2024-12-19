@@ -155,7 +155,7 @@ describe("Create token", function () {
     const transferAmount = new anchor.BN(100);
     await transferTokens(
       mintKeyPair,
-      recipientKeyPair,
+      recipientKeyPair.publicKey,
       senderTokenAddress,
       recipientTokenAddress,
       transferAmount

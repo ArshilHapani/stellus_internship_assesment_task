@@ -10,7 +10,7 @@ use {
     },
 };
 
-declare_id!("EyEga9U4hdHnA2KihSjiDqupNTfvjenbqAbqdjeVtMQq");
+declare_id!("3VVn1VWfU5nrJzfeNbNGVC8nxAghDcn63A3mebvjQGd9");
 
 #[program]
 pub mod stellus_task_staking {
