@@ -1,10 +1,29 @@
 import { NextResponse } from "next/server";
 
+import { PoolTable } from "@/db/schema";
+import db from "@/lib/drizzle";
+
 export async function POST(req: Request) {
   try {
-    const { userAddress, poolName, image, description } = await req.json();
+    const {
+      userAddress,
+      poolName,
+      image,
+      description,
+      initialRewardAmount,
+      allowedTokenMint,
+      APY,
+    } = await req.json();
 
-    if (!userAddress || !poolName || !image || !description) {
+    if (
+      !userAddress ||
+      !poolName ||
+      !image ||
+      !description ||
+      !initialRewardAmount ||
+      !allowedTokenMint ||
+      !APY
+    ) {
       return NextResponse.json(
         {
           message: "Please fill all the fields",
@@ -13,6 +32,15 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+    // Create a pool
+    // await db.insert(PoolTable).values({
+    //   description,
+    //   image,
+    //   userAddress,
+    //   poolName,
+    // });
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return NextResponse.json(

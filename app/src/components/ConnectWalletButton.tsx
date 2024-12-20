@@ -26,7 +26,7 @@ export function ConnectWalletButton() {
         />
         <TooltipComponent title="Create new pool">
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
             onClick={() => openModal("create-pool")}
           >

@@ -42,7 +42,7 @@ const stakingAccountGlobalContextSeed = Buffer.from("staking_account");
 const userStakeAccountLocalContextSeed = Buffer.from("user_stake");
 
 const [stakingAccountPDA, bump] = PublicKey.findProgramAddressSync(
-  [stakingAccountGlobalContextSeed],
+  [admin.publicKey.toBuffer(), stakingAccountGlobalContextSeed],
   program.programId
 );
 const [userStakeAccountPDA] = PublicKey.findProgramAddressSync(

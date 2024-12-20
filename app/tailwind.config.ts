@@ -24,6 +24,13 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      fontSize: {
+        sm: "12px",
+        base: "14px",
+        lg: "16px",
+        xl: "20px",
+        "2xl": "24px",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

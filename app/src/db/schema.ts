@@ -7,4 +7,5 @@ export const PoolTable = pgTable("pools", {
   poolName: text().notNull(),
   image: text().notNull(),
   description: text().notNull(),
+  bump: integer().notNull(),
 });

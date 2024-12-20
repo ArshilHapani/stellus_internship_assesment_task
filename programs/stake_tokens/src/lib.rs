@@ -238,7 +238,7 @@ pub struct Initialize<'info> {
     #[account(
         init, // means initialize the account
         payer = admin, // means the admin account will pay for the transaction and rent
-        seeds = [b"staking_account"], // means it will create the PDA
+        seeds = [admin.key.as_ref(),b"staking_account"], // means it will create the PDA
         bump, // multiple PDAs can be created with the same seeds
         space = size_of::<StakingAccount>() + 8 // size of the account 8 for descriptor
     )]
