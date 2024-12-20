@@ -1,13 +1,29 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, CloseAccount, Token, TokenAccount, Transfer};
+use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 use std::mem::size_of;
 
-declare_id!("GwrUWvcWzD1XqPgWVji188Ae3xFJD2Voca8CxhHt5Sam");
+declare_id!("7a8fBQMwbtE1C61fcGUW6quAgdqdmzYojha5cQq9Ju4q");
 
+////////////////////////////////////////////////////////////////////////////////
+///////////////////////// INSTRUCTIONS IMPLEMENTATIONS /////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 #[program]
 pub mod stake_tokens {
     use super::*;
 
+    ////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////// INITIALIZE //////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /// Initialize instruction
+    /// This instruction is used to create a new staking pool
+    ///
+    /// # Arguments
+    /// * `ctx` - context of the program
+    /// * `bump` - unique bump for rach pool
+    /// * `token_mint` - program_id (address) of specific token which is allowed stake
+    /// * `reward_rate` - APY return yearly in percentage (0-100)
+    /// * `min_staking_duration` - minimum staking duration in seconds
     pub fn initialize(
         ctx: Context<Initialize>,
         bump: u8,                  // unique bump for rach pool
@@ -25,6 +41,16 @@ pub mod stake_tokens {
         Ok(())
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////// FUND REWARD /////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /// Fund reward instruction
+    /// This instruction is used to fund the reward pool
+    ///
+    /// # Arguments
+    /// * `ctx` - context of the program
+    /// * `amount` - amount to fund the reward pool
     pub fn fund_reward(ctx: Context<FundRewards>, amount: u64) -> Result<()> {
         // only admin can fund the reward pool
         require!(
@@ -38,6 +64,17 @@ pub mod stake_tokens {
         Ok(())
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////// STAKE ////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /// Stake instruction
+    /// This instruction is used to stake tokens
+    ///
+    /// # Arguments
+    /// * `ctx` - context of the program
+    /// * `amount` - amount to stake
+    /// * `timestamp` - custom timestamp for testing
     pub fn stake(ctx: Context<Stake>, amount: u64, timestamp: Option<i64>) -> Result<()> {
         let staking_account = &ctx.accounts.staking_account;
 
@@ -68,6 +105,16 @@ pub mod stake_tokens {
         Ok(())
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////// REDEEM ////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /// Redeem instruction
+    /// This instruction is used to redeem staked tokens
+    ///
+    /// # Arguments
+    /// * `ctx` - context of the program
+    /// * `force_redeem` - force redeeming
     pub fn redeem(ctx: Context<Redeem>, force_redeem: bool) -> Result<()> {
         let staking_account = &mut ctx.accounts.staking_account;
 
@@ -131,13 +178,27 @@ pub mod stake_tokens {
 
         token::transfer(ctx.accounts.transfer_to_user_ctx(), total_amount)?;
 
-        // Close user's stake account
-        // token::close_account(ctx.accounts.close_stake_account_ctx())?;
+        // Account closure will be handled automatically by the Solana runtime
+        // because of the `close = user` attribute on the user_stake account.
 
         Ok(())
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////// PROGRAM STATES STRUCTS /////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+
+/// Staking account struct
+/// This struct is used to define the state of the staking pool
+///
+/// # Fields
+/// * `admin` - admin account (signer)
+/// * `reward_rate` - annual percentage yield (APY) in percentage (0-100)
+/// * `bump` - bump for the PDA (multiple PDAs can be created with the same seeds)
+/// * `token_mint` - program_id (address) of specific token which is allowed stake
+/// * `admin_reward_amount` - admin reward amount
+/// * `min_staking_duration` - minimum staking duration in seconds
 #[account]
 pub struct StakingAccount {
     pub admin: Pubkey,
@@ -148,12 +209,30 @@ pub struct StakingAccount {
     pub min_staking_duration: i64, // Minimum staking duration in seconds
 }
 
+/// User stake account struct
+/// This struct is used to define the state of the user stake account
+///
+/// # Fields
+/// * `amount` - Amount of tokens staked
+/// * `start_time` - Start time of staking in milliseconds
 #[account]
 pub struct UserStake {
     pub amount: u64,
     pub start_time: i64,
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////// INSTRUCTIONS STRUCTS //////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+
+/// Initialize instruction structs
+/// This struct is used to define the accounts and instructions required for the initialize instruction
+/// This instruction is used to create a new staking pool
+///
+/// # Fields
+/// * `staking_account` - staking pool account PDA (which is created in the initialize function)
+/// * `admin` - admin account (signer)
+/// * `system_program` - system program used to create the staking_account PDA
 #[derive(Accounts)]
 pub struct Initialize<'info> {
     #[account(
@@ -169,6 +248,16 @@ pub struct Initialize<'info> {
     pub system_program: Program<'info, System>, // system program used to create the staking_account PDA
 }
 
+/// Fund reward instruction structs
+/// This struct is used to define the accounts and instructions required for the fund reward instruction
+/// This instruction is used to fund the reward pool
+///
+/// # Fields
+/// * `staking_account` - staking pool account PDA (which is created in the initialize function)
+/// * `staking_token_account` - staking token account which holds the SPL tokens for staking (shared by all users within the pool)
+/// * `admin` - admin account (signer)
+/// * `admin_token_account` - admin token account which holds the required SPL tokens
+/// * `token_program` - token program used to transfer tokens
 #[derive(Accounts)]
 pub struct FundRewards<'info> {
     #[account(mut)]
@@ -184,6 +273,13 @@ pub struct FundRewards<'info> {
 
 impl<'info> FundRewards<'info> {
     /// This function creates CPI context for transferring tokens from admin to staking account
+    ///
+    /// # Example
+    /// ```rs
+    /// let ctx = FundRewards {...}
+    /// let cpi_ctx = ctx.fund_reward_from_admin_ctx();
+    /// token::transfer(cpi_ctx, amount)?;
+    /// ```
     pub fn fund_reward_from_admin_ctx(&self) -> CpiContext<'_, '_, '_, 'info, Transfer<'info>> {
         CpiContext::new(
             self.token_program.to_account_info(), // token program account info (used for token transferring)
@@ -196,6 +292,29 @@ impl<'info> FundRewards<'info> {
     }
 }
 
+/// Stake instruction structs
+/// This struct is used to define the accounts and instructions required for the stake instruction
+///
+/// # Fields
+/// * `staking_account` - staking pool account PDA (which is created in the initialize function)
+/// * `user_stake` - user stake account PDA (which is created in the stake function)
+/// * `user` - user account (signer)
+/// * `user_token_account` - user token account which holds the required SPL tokens
+/// * `staking_token_account` - staking token account which holds the SPL tokens for staking (shared by all users within the pool)
+/// * `token_program` - token program used to transfer tokens
+///
+/// # Example
+///
+/// ```rs
+/// let ctx = Stake {
+///    staking_account: staking_account.to_account_info(),
+///    user_stake: user_stake.to_account_info(),
+///    user: user.to_account_info(),
+///    user_token_account: user_token_account.to_account_info(),
+///    staking_token_account: staking_token_account.to_account_info(),
+///    token_program: token_program.to_account_info(),
+/// };
+/// ```
 #[derive(Accounts)]
 pub struct Stake<'info> {
     #[account(mut)]
@@ -219,7 +338,16 @@ pub struct Stake<'info> {
 }
 
 impl<'info> Stake<'info> {
-    /// This function creates CPI context for transferring tokens from user to staking account
+    /// Implementation of Stake instruction
+    /// This function is used to create CPI context for transferring tokens from user to staking account
+    ///
+    /// # Example
+    ///
+    /// ```rs
+    /// let ctx = Stake {...}
+    /// let cpi_ctx = ctx.transfer_to_stake_ctx();
+    /// token::transfer(cpi_ctx, amount)?;
+    /// ```
     pub fn transfer_to_stake_ctx(&self) -> CpiContext<'_, '_, '_, 'info, Transfer<'info>> {
         // Creates the CPI context and return it
         CpiContext::new(
@@ -233,6 +361,17 @@ impl<'info> Stake<'info> {
     }
 }
 
+/// Redeem instruction structs
+/// This struct is used to define the accounts and instructions required for the redeem instruction
+///
+/// # Fields
+/// * `staking_account` - staking pool account PDA (which is created in the initialize function)
+/// * `staking_token_account_owner` - staking pool account owner, who owns the pool  (signer)
+/// * `user_stake` - user stake account PDA (which is created in the stake function)
+/// * `user` - user account (signer)
+/// * `user_token_account` - user token account which holds the required SPL tokens
+/// * `staking_token_account` - staking token account which holds the SPL tokens for staking (shared by all users within the pool)
+/// * `token_program` - token program used to transfer tokens
 #[derive(Accounts)]
 pub struct Redeem<'info> {
     #[account(mut)]
@@ -246,7 +385,7 @@ pub struct Redeem<'info> {
 
     #[account(
         mut, // mutable account (which is created in the stake function)
-        seeds = [user.key().as_ref(), b"user_stake"], // seeds (to access the PDA created in the stake function)
+        seeds = [user.key.as_ref(), b"user_stake"], // seeds (to access the PDA created in the stake function)
         bump, // bump for the PDA (must be same as the one used in the stake function)
         close = user // close the account and transfer the remaining balance to the user account
     )]
@@ -268,6 +407,13 @@ pub struct Redeem<'info> {
 
 impl<'info> Redeem<'info> {
     /// This function creates CPI context for transferring tokens from staking account to user
+    ///
+    /// # Example
+    /// ```rs
+    /// let ctx = Redeem {...}
+    /// let cpi_ctx = ctx.transfer_to_user_ctx();
+    /// token::transfer(cpi_ctx, amount)?;
+    /// ```
     pub fn transfer_to_user_ctx(&self) -> CpiContext<'_, '_, '_, 'info, Transfer<'info>> {
         // Creates the CPI context and return it
         CpiContext::new(
@@ -279,25 +425,11 @@ impl<'info> Redeem<'info> {
             },
         )
     }
-
-    /// This function creates CPI context for closing user stake account and transferring remaining balance to user
-    pub fn close_stake_account_ctx(&self) -> CpiContext<'_, '_, '_, 'info, CloseAccount<'info>> {
-        // Creates the CPI context and return it
-        msg!("from: {}", self.staking_token_account.key());
-        msg!("to: {}", self.user_token_account.key());
-        msg!("authority: {}", self.staking_token_account_owner.key());
-        msg!("account: {}", self.user.key());
-        msg!("userStake {}", self.user_stake.key());
-        CpiContext::new(
-            self.token_program.to_account_info(), // token program account info (used for token transferring)
-            CloseAccount {
-                account: self.user_stake.to_account_info(), // user stake account
-                destination: self.user.to_account_info(),   // user account
-                authority: self.user.to_account_info(),     // authority to close the account (user)
-            },
-        )
-    }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////// ERROR ENUM AND HELPER FUNCTION /////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
 
 /// Custom error type for staking program
 /// This will be used to return error codes to the client

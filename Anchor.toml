@@ -5,17 +5,18 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-stake_tokens = "GwrUWvcWzD1XqPgWVji188Ae3xFJD2Voca8CxhHt5Sam"
-stellus_task_staking = "3VVn1VWfU5nrJzfeNbNGVC8nxAghDcn63A3mebvjQGd9"
+custom_spl_tokens = "GmWEsdzWFfkpMtRKnkEMcC17NvqepxktLL9XEQwMKZTP"
+stake_tokens = "7a8fBQMwbtE1C61fcGUW6quAgdqdmzYojha5cQq9Ju4q"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
+createAndMintToken = "bun run ./scripts/deployAndMintToken.ts"
 test = "bun run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 
 [test]

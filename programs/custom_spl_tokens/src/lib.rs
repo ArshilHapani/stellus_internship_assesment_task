@@ -10,13 +10,29 @@ use {
     },
 };
 
-declare_id!("3VVn1VWfU5nrJzfeNbNGVC8nxAghDcn63A3mebvjQGd9");
+declare_id!("GmWEsdzWFfkpMtRKnkEMcC17NvqepxktLL9XEQwMKZTP");
+
+////////////////////////////////////////////////////////////////////////////////
+///////////////////////// INSTRUCTIONS IMPLEMENTATIONS /////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 #[program]
-pub mod stellus_task_staking {
+pub mod custom_spl_tokens {
 
     use super::*;
 
+    ////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////// CREATE TOKEN MINT //////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /// Create a new token mint
+    /// This instruction creates a new token mint and associated metadata account
+    ///
+    /// # Arguments
+    /// * `ctx` - The context of the transaction
+    /// * `token_name` - The name of the token
+    /// * `token_symbol` - The symbol of the token
+    /// * `token_uri` - The URI of the token
     pub fn create_token_mint(
         ctx: Context<CreateToken>,
         _token_decimals: u8,
@@ -59,6 +75,16 @@ pub mod stellus_task_staking {
         Ok(())
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////// MINT TOKEN //////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /// Mint tokens to an associated token account
+    /// This instruction mints tokens to an associated token account
+    ///
+    /// # Arguments
+    /// * `ctx` - The context of the transaction
+    /// * `amount` - The amount of tokens to mint
     pub fn mint_token(ctx: Context<MintToken>, amount: u64) -> Result<()> {
         msg!("Minting tokens to associated token account....");
         msg!("Mint {}", &ctx.accounts.mint_account.key());
@@ -82,6 +108,16 @@ pub mod stellus_task_staking {
         Ok(())
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////// TRANSFER TOKEN ////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+
+    /// Transfer tokens between associated token accounts
+    /// This instruction transfers tokens between associated token accounts
+    ///
+    /// # Arguments
+    /// * `ctx` - The context of the transaction
+    /// * `amount` - The amount of tokens to transfer
     pub fn transfer_token(ctx: Context<TransferToken>, amount: u64) -> Result<()> {
         msg!("Transferring token..");
         msg!(
@@ -115,6 +151,21 @@ pub mod stellus_task_staking {
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////// INSTRUCTIONS STRUCTS //////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+
+/// Create a new token mint
+/// This instruction creates a new token mint and associated metadata account
+///
+/// # Accounts expected:
+/// * `payer` - The account paying for the transaction
+/// * `metadata_account` - The metadata account to create
+/// * `mint_account` - The mint account to create
+/// * `token_metadata_program` - The token metadata program (used to create metadata account)
+/// * `token_program` - The token program
+/// * `system_program` - The system program
+/// * `rent` - The rent sysvar
 #[derive(Accounts)]
 #[instruction(_token_decimals: u8)]
 pub struct CreateToken<'info> {
@@ -144,6 +195,17 @@ pub struct CreateToken<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
+/// Mint tokens to an associated token account
+/// This instruction mints tokens to an associated token account
+///
+/// # Accounts expected:
+/// * `mint_authority` - The authority to mint tokens
+/// * `recipient` - The system account to mint tokens to
+/// * `mint_account` - The mint account
+/// * `associated_token_account` - The associated token account to mint tokens to
+/// * `token_program` - The token program
+/// * `associated_token_program` - The associated token program
+/// * `system_program` - The system program
 #[derive(Accounts)]
 pub struct MintToken<'info> {
     #[account(mut)]
@@ -167,6 +229,18 @@ pub struct MintToken<'info> {
     pub system_program: Program<'info, System>,
 }
 
+/// Transfer tokens between associated token accounts
+/// This instruction transfers tokens between associated token accounts
+///
+/// # Accounts expected:
+/// * `sender` - The account transferring tokens
+/// * `recipient` - The account receiving tokens
+/// * `mint_account` - The mint account
+/// * `sender_token_account` - The sender's associated token account
+/// * `recipient_token_account` - The recipient's associated token account
+/// * `token_program` - The token program
+/// * `associated_token_program` - The associated token program
+/// * `system_program` - The system program
 #[derive(Accounts)]
 pub struct TransferToken<'info> {
     #[account(mut)]

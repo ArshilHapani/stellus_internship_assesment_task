@@ -1,0 +1,79 @@
+{
+  "id": "e2b06fea-8c49-4dc6-94b0-ee7e1c14be3a",
+  "prevId": "1f46de9f-346f-4e04-bf6f-726e6d3d5f0a",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.pools": {
+      "name": "pools",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "pools_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "userAddress": {
+          "name": "userAddress",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "poolAddress": {
+          "name": "poolAddress",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "poolName": {
+          "name": "poolName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

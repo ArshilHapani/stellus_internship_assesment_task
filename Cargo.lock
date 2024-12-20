@@ -834,6 +834,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "custom_spl_tokens"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+]
+
+[[package]]
 name = "darling"
 version = "0.20.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2261,14 +2269,6 @@ dependencies = [
 
 [[package]]
 name = "stake_tokens"
-version = "0.1.0"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
-]
-
-[[package]]
-name = "stellus_task_staking"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",

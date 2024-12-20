@@ -1,12 +1,12 @@
 [package]
-name = "stellus_task_staking"
+name = "custom_spl_tokens"
 version = "0.1.0"
-description = "Created with Anchor"
+description = "This program is a custom SPL token program that allows for the creation of a custom token and minting of it."
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "stellus_task_staking"
+name = "custom_spl_tokens"
 
 [features]
 default = []

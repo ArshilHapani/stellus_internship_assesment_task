@@ -3,7 +3,7 @@ import { Keypair } from "@solana/web3.js";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { assert } from "chai";
 
-import { StellusTaskStaking } from "../target/types/stellus_task_staking";
+import { CustomSplTokens } from "../target/types/custom_spl_tokens";
 import keypair from "../utils/privateKey";
 import {
   createAndMintToken,
@@ -18,7 +18,7 @@ import {
 const provider = anchor.AnchorProvider.env();
 anchor.setProvider(provider);
 const program = anchor.workspace
-  .StellusTaskStaking as anchor.Program<StellusTaskStaking>;
+  .CustomSplTokens as anchor.Program<CustomSplTokens>;
 const payer = keypair;
 const mintAmount = new anchor.BN(1000);
 

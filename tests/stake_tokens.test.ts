@@ -23,6 +23,10 @@ import {
   transferTokens,
 } from "../utils/helpers";
 
+//////////////////////////////////////////////////
+///////// HELPER CONSTANTS AND FUNCTIONS /////////
+//////////////////////////////////////////////////
+
 const provider = anchor.AnchorProvider.env();
 anchor.setProvider(provider);
 
@@ -67,6 +71,10 @@ const minStakingDuration = new anchor.BN(1 * 365 * 24 * 60 * 60);
 const oneYearBeforeTimeStamp = new anchor.BN(
   new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).getTime()
 );
+
+//////////////////////////////////////////////////
+///////////////////// TESTS /////////////////////
+//////////////////////////////////////////////////
 
 describe("Test for staking tokens", function () {
   it("It should initialize the pool (`initialize` instruction test)", async function () {
@@ -212,24 +220,11 @@ describe("Test for staking tokens", function () {
     );
     const beforeRedeemStakerBalance =
       await provider.connection.getTokenAccountBalance(stakerTokenAccountATA);
-    const stakingAccount = await program.account.stakingAccount.fetch(
+    const beforeStakingAccount = await program.account.stakingAccount.fetch(
       stakingAccountPDA
     );
-    console.log("Staking Account:", {
-      tokenMint: stakingAccount.tokenMint.toBase58(),
-      adminRewardAmount: stakingAccount.adminRewardAmount.toString(),
-    });
 
-    // Verify account ownership and data
-    console.log("Account Keys:", {
-      user: staker.publicKey.toBase58(),
-      userTokenAccount: stakerTokenAccountATA.toBase58(),
-      stakingTokenAccountOwner: stakingTokenAccountKP.publicKey.toBase58(),
-      stakingTokenAccount: stakingAccountATA.toBase58(),
-      stakingAccount: stakingAccountPDA.toBase58(),
-    });
-
-    const instructions = await program.methods
+    await program.methods
       .redeem(false) // force redeem
       .accounts({
         stakingAccount: stakingAccountPDA,
@@ -244,18 +239,17 @@ describe("Test for staking tokens", function () {
       .signers([staker, stakingTokenAccountKP])
       .rpc();
 
-    // await simulateTransaction([instructions], [staker, stakingTokenAccountKP]);
+    // balance must be deduced from stakingAccount (global pool)
+    const afterStakingAccount =
+      await provider.connection.getTokenAccountBalance(stakingAccountATA);
+
+    assert(
+      afterStakingAccount.value.uiAmount ==
+        beforeStakingAccount.adminRewardAmount.toNumber() - reward
+    );
 
     const stakerBalanceAfterRedeem =
       await provider.connection.getTokenAccountBalance(stakerTokenAccountATA);
-    console.log(
-      "Staker Balance After Redeem:",
-      stakerBalanceAfterRedeem.value.uiAmount
-    );
-    console.log(
-      "Staker Balance Before Redeem:",
-      beforeRedeemStakerBalance.value.uiAmount
-    );
 
     assert(
       stakerBalanceAfterRedeem.value.uiAmount ==

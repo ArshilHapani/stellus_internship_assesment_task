@@ -7,18 +7,27 @@ import {
   Transaction,
   TransactionInstruction,
 } from "@solana/web3.js";
+import fs from "node:fs";
+import path from "node:path";
 
 import { StakeTokens } from "../target/types/stake_tokens";
-import { StellusTaskStaking } from "../target/types/stellus_task_staking";
+import { CustomSplTokens } from "../target/types/custom_spl_tokens";
 import keypair from "../utils/privateKey";
+
+//////////////////////////////////////////////////
+///////// HELPER FUNCTIONS AND CONSTANTS /////////
+//////////////////////////////////////////////////
 
 const provider = anchor.AnchorProvider.env();
 anchor.setProvider(provider);
 const program = anchor.workspace
-  .StellusTaskStaking as anchor.Program<StellusTaskStaking>;
+  .CustomSplTokens as anchor.Program<CustomSplTokens>;
 const payer = keypair;
 
-const metadata = {
+//////////////////////////////////////////////////
+///////////////// TOKEN METADATA /////////////////
+//////////////////////////////////////////////////
+export const metadata = {
   name: "INTERVIEW",
   symbol: "ITW",
   uri: "https://bafkreic6kmxp2ndrkns3plteriluxpezhu53m736fskdjr5cisxn2yfxm4.ipfs.flk-ipfs.xyz",
@@ -215,4 +224,14 @@ export async function simulateTransaction(
   } catch (error) {
     console.error("Error simulating transaction:", error);
   }
+}
+
+export function writeFileContent(filePath: string, content: Record<any, any>) {
+  const stringifiedContent = JSON.stringify(content, null, 2);
+  const resolvedPath = path.resolve(filePath);
+
+  // stream for large files
+  const stream = fs.createWriteStream(resolvedPath);
+  stream.write(stringifiedContent);
+  stream.end();
 }
