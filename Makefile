@@ -17,5 +17,14 @@ test:
 build:
 	@anchor build
 
+deploy-programs-mint:
+	@anchor run createAndMintToken
+
+initialize-staking-pool:
+	@anchor run initializePool
+
+transfer-token:
+	@anchor run transferTokens
+
 start-client:
 	@cd app && bun run dev

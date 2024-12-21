@@ -3,12 +3,7 @@ import {
   getAssociatedTokenAddressSync,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
-import {
-  Keypair,
-  LAMPORTS_PER_SOL,
-  PublicKey,
-  SystemProgram,
-} from "@solana/web3.js";
+import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 import { assert } from "chai";
 
 import type { StakeTokens } from "../target/types/stake_tokens";
@@ -18,8 +13,6 @@ import {
   createAndMintToken,
   getStakeInfo,
   oneYearInMilliseconds,
-  printTransactionLogs,
-  simulateTransaction,
   transferTokens,
 } from "../utils/helpers";
 
@@ -40,6 +33,9 @@ const mintAmount = new anchor.BN(100000); // Amount to mint and stake
 
 const stakingAccountGlobalContextSeed = Buffer.from("staking_account");
 const userStakeAccountLocalContextSeed = Buffer.from("user_stake");
+
+// initialize id must be random number type between 0 and 255
+// const initialize_id = Math.floor(Math.random() * 255).toString();
 
 const [stakingAccountPDA, bump] = PublicKey.findProgramAddressSync(
   [admin.publicKey.toBuffer(), stakingAccountGlobalContextSeed],
@@ -80,7 +76,7 @@ describe("Test for staking tokens", function () {
   it("It should initialize the pool (`initialize` instruction test)", async function () {
     await createAndMintToken(mintKeyPair, adminTokenAccountATA, mintAmount);
     await transferTokens(
-      mintKeyPair,
+      mintKeyPair.publicKey,
       stakingTokenAccountKP.publicKey,
       adminTokenAccountATA,
       stakingAccountATA,
@@ -140,7 +136,7 @@ describe("Test for staking tokens", function () {
   it("It should stake the user's token (`stake` instruction)", async function () {
     const transferAmount = new anchor.BN(2000);
     await transferTokens(
-      mintKeyPair,
+      mintKeyPair.publicKey,
       staker.publicKey,
       adminTokenAccountATA,
       stakerTokenAccountATA,

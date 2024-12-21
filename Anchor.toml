@@ -12,13 +12,16 @@ stake_tokens = "7a8fBQMwbtE1C61fcGUW6quAgdqdmzYojha5cQq9Ju4q"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
 createAndMintToken = "bun run ./scripts/deployAndMintToken.ts"
 test = "bun run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 migrateTypesToClient = "./scripts/generateTypes.sh"
+initializePool = "bun run ./scripts/initializePool.ts"
+transferTokens = "bun run ./scripts/transferTokens.ts"
+temp = "bun run ./scripts/temp.ts"
 
 [test]
 startup_wait = 5000

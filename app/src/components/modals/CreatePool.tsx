@@ -4,19 +4,13 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import { PublicKey, SystemProgram } from "@solana/web3.js";
-import { WalletSignTransactionError } from "@solana/wallet-adapter-base";
-import { AnchorError, BN } from "@coral-xyz/anchor";
 
 import { DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
 import FormInput from "../FormInput";
 import Modal from ".";
-import useAnchor from "@/hooks/useAnchor";
-import { StakeTokens } from "@/lib/constant";
 
-type FormSchema = {
+export type FormSchema = {
   title: string;
   description: string;
   image: string;
@@ -39,16 +33,7 @@ const CreatePool = () => {
     setError,
   } = useForm<FormSchema>();
   const [formState, setFormState] = useState(FORM_STATE.Initial);
-  const anchorWallet = useAnchorWallet();
-  const { program, stakingAccountPDA, stakingAccountPDABump } =
-    useAnchor<StakeTokens>(anchorWallet);
-  const [loading, setLoading] = useState(false);
-  console.log({
-    program: program?.programId.toBase58(),
-    stakingAccountPDA: stakingAccountPDA?.toBase58(),
-    anchorWallet: anchorWallet?.publicKey.toBase58(),
-    tokenMintPk: getValues("tokenMint"),
-  });
+  const loading = false;
 
   const handleNext = () => {
     const title = getValues("title");
@@ -69,55 +54,8 @@ const CreatePool = () => {
   };
 
   async function onSubmit(data: FormSchema) {
-    // data.apy must be between 0 and 100
-    if (Number(data.apy) < 0 || Number(data.apy) > 100) {
-      toast.error("APY must be between 0 and 100");
-      return;
-    }
-    if (!/^(http|https):\/\/[^ "]+$/.test(data.image)) {
-      toast.error("Please enter valid image URL");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const tokenMintPK = new PublicKey(data.tokenMint);
-      const minStakingDurationInSeconds = new BN(
-        Number(data.minimumStakeDurationInDays) * 24 * 60 * 60
-      );
-      const tx = await program?.methods
-        .initialize(
-          (stakingAccountPDABump + 1) % 255,
-          tokenMintPK,
-          Number(data.apy),
-          minStakingDurationInSeconds
-        )
-        .accounts({
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          stakingAccount: stakingAccountPDA,
-          admin: anchorWallet?.publicKey,
-          systemProgram: SystemProgram.programId,
-        })
-        .rpc();
-
-      toast.success(`Pool created successfully with tx: ${tx}`);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (e: any) {
-      console.error(e);
-      if (e instanceof WalletSignTransactionError) {
-        toast.error(`Transaction cancelled because ${e.message}`);
-        return;
-      } else if (e instanceof AnchorError) {
-        toast.error("Transaction failed because see console for more info");
-        return;
-      } else {
-        toast.error("Failed to create pool");
-        return;
-      }
-    } finally {
-      setLoading(false);
-    }
+    console.log(data);
+    toast.info("This feature will available soon");
   }
 
   let formContent: React.ReactNode = null;

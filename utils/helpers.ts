@@ -70,7 +70,7 @@ export async function createAndMintToken(
 }
 
 export async function transferTokens(
-  mintKeyPair: Keypair,
+  mintKeyPair: PublicKey,
   recipientKeyPair: PublicKey,
   senderTokenAddress: anchor.web3.PublicKey,
   recipientTokenAddress: anchor.web3.PublicKey,
@@ -81,11 +81,12 @@ export async function transferTokens(
     .accounts({
       sender: payer.publicKey,
       recipient: recipientKeyPair,
-      mintAccount: mintKeyPair.publicKey,
+      mintAccount: mintKeyPair,
       // @ts-ignore
       senderTokenAccount: senderTokenAddress,
       recipientTokenAccount: recipientTokenAddress,
     })
+    .signers([payer])
     .rpc();
 }
 
@@ -147,7 +148,13 @@ export async function initializeAta(
   const ata = getAssociatedTokenAddressSync(mint.publicKey, receiverPk);
 
   // dummy transaction
-  await transferTokens(mint, receiverPk, sender, senderAta, new anchor.BN(0));
+  await transferTokens(
+    mint.publicKey,
+    receiverPk,
+    sender,
+    senderAta,
+    new anchor.BN(0)
+  );
   return ata;
 }
 

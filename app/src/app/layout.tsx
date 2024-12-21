@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import { Navbar } from "@/components/Navbar";
 
-import { ThemeProvider } from "@/components/providers/theme-provider";
-import WalletProvider from "@/components/providers/wallet-provider";
+import { Navbar } from "@/components/Navbar";
 import ModeToggle from "@/components/ModeToggle";
 import Provider from "@/components/providers";
+import NetworkIndicator from "@/components/NetworkIndicator";
 
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Token Staking App",
@@ -23,16 +19,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <body>
+        <main className="dark:bg-[var(--background-dark)]">
           <Provider>
             <ModeToggle />
-            <WalletProvider>
-              <Navbar />
-              {children}
-            </WalletProvider>
+            <Navbar />
+            {children}
+            <NetworkIndicator />
           </Provider>
-        </ThemeProvider>
+        </main>
       </body>
     </html>
   );

@@ -193,6 +193,7 @@ pub mod stake_tokens {
 /// This struct is used to define the state of the staking pool
 ///
 /// # Fields
+/// * `id` - unique id for each pool (associated with user)
 /// * `admin` - admin account (signer)
 /// * `reward_rate` - annual percentage yield (APY) in percentage (0-100)
 /// * `bump` - bump for the PDA (multiple PDAs can be created with the same seeds)

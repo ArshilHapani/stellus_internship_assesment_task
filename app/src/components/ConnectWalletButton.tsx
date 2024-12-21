@@ -5,26 +5,32 @@ import {
   WalletMultiButton,
 } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { Plus } from "lucide-react";
+import Link from "next/link";
 
 import { Button } from "./ui/button";
-import TooltipComponent from "./TooltipComponent";
-import CreatePool from "./modals/CreatePool";
+// import { Plus } from "lucide-react";
 
-import useModal from "@/hooks/useModal";
+// import { Button } from "./ui/button";
+// import TooltipComponent from "./TooltipComponent";
+// import CreatePool from "./modals/CreatePool";
+
+// import useModal from "@/hooks/useModal";
 
 export function ConnectWalletButton() {
   const wallet = useWallet();
-  const { openModal } = useModal();
+  // const { openModal } = useModal();
   if (wallet.connected) {
     return (
       <div className="flex items-center gap-x-4">
+        <Button variant="link">
+          <Link href="/my-stake">My stake</Link>
+        </Button>
         <WalletDisconnectButton
           style={{
             backgroundColor: "#0066cc",
           }}
         />
-        <TooltipComponent title="Create new pool">
+        {/* <TooltipComponent title="Create new pool">
           <Button
             variant="outline"
             size="icon"
@@ -33,7 +39,7 @@ export function ConnectWalletButton() {
             <Plus className="h-4 w-4" />
           </Button>
         </TooltipComponent>
-        <CreatePool />
+        <CreatePool /> */}
       </div>
     );
   }

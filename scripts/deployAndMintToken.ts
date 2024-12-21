@@ -3,11 +3,7 @@ import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { Keypair } from "@solana/web3.js";
 
 import { CustomSplTokens } from "../target/types/custom_spl_tokens";
-import {
-  createAndMintToken,
-  metadata,
-  writeFileContent,
-} from "../utils/helpers";
+import { metadata, writeFileContent } from "../utils/helpers";
 import keypair from "../utils/privateKey";
 
 const provider = anchor.AnchorProvider.env();

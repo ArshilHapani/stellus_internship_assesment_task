@@ -7,7 +7,6 @@ import {
 } from "@solana/wallet-adapter-react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import {
-  UnsafeBurnerWalletAdapter,
   PhantomWalletAdapter,
   BitgetWalletAdapter,
   AlphaWalletAdapter,
@@ -30,7 +29,6 @@ const Wallet: FC<Props> = ({ children }) => {
 
   const wallets = useMemo(
     () => [
-      new UnsafeBurnerWalletAdapter(),
       new PhantomWalletAdapter(),
       new BitgetWalletAdapter(),
       new AlphaWalletAdapter(),
