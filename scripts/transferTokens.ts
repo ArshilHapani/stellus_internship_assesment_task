@@ -18,17 +18,21 @@ const mintAddr = new PublicKey("F7zbU4Lqs1cBNX35o6NmuXXjoE2ri7Z9nsLjk7UvmwuV");
 const recipientAddr = new PublicKey(
   "5KmTPuuGEwmvUiXFQNo9R8oJCj59cD797qjupATkVUe4"
 );
-const transferAmount = new anchor.BN(10); // specify the amount to transfer
+const transferAmount = new anchor.BN(1000); // specify the amount to transfer
 const senderATA = getAssociatedTokenAddressSync(mintAddr, admin.publicKey);
 const userATA = getAssociatedTokenAddressSync(mintAddr, recipientAddr);
 
 (async function () {
-  await transferTokens(
-    mintAddr,
-    recipientAddr,
-    senderATA,
-    userATA,
-    transferAmount
-  );
-  console.log("Tokens transferred successfully!✅ ");
+  try {
+    await transferTokens(
+      mintAddr,
+      recipientAddr,
+      senderATA,
+      userATA,
+      transferAmount
+    );
+    console.log("Tokens transferred successfully!✅");
+  } catch (error) {
+    console.log(error.message);
+  }
 })();

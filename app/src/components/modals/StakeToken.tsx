@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Info } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 
 import { DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
@@ -15,7 +15,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Address } from "../Address";
-import Modal from ".";
+import Modal from "./";
 import { Button } from "../ui/button";
 import FormInput from "../FormInput";
 import { Skeleton } from "../ui/skeleton";
@@ -39,10 +39,12 @@ const StakeToken = ({ pool }: Props) => {
     handleSubmit,
     formState: { errors },
   } = useForm<FormSchema>();
-  const wallet = useAnchorWallet();
-  const userATA = wallet
-    ? getAssociatedTokenAddressSync(pool.tokenMint, wallet.publicKey)
-    : undefined;
+  const wallet = useWallet();
+
+  const userATA =
+    wallet && wallet.publicKey && pool
+      ? getAssociatedTokenAddressSync(pool?.tokenMint, wallet?.publicKey)
+      : undefined;
 
   const { stake } = useHandleStake();
   const [lStateLoading, setLoading] = useState(false);
@@ -53,14 +55,15 @@ const StakeToken = ({ pool }: Props) => {
 
   function onSubmit(data: FormSchema) {
     setLoading(true);
-    stake(data.amount, pool.tokenMint, pool.admin);
-    setLoading(false);
+    stake(data.amount, pool?.tokenMint, pool?.admin).finally(() =>
+      setLoading(false)
+    );
   }
   const loading = loadingUserBalance || lStateLoading;
 
   return (
     <Modal
-      type={`stake-pool-${pool.admin.toBase58() + pool.adminRewardAmount + pool.rewardRate + pool.tokenMint.toBase58()}`}
+      type={`stake-pool-${pool?.admin.toBase58() + pool?.adminRewardAmount + pool?.rewardRate + pool?.tokenMint.toBase58()}`}
     >
       <DialogHeader>
         <DialogTitle className="text-xl">Stake token</DialogTitle>
@@ -68,7 +71,7 @@ const StakeToken = ({ pool }: Props) => {
           <HoverCard openDelay={0}>
             <HoverCardTrigger className="inline-flex items-center">
               You must lock your tokens for{" "}
-              {secondsToDay(pool.minStakingDuration.toNumber())} days{" "}
+              {secondsToDay(pool?.minStakingDuration.toNumber())} days{" "}
               <Info className="h-3 w-3 ml-1" />
             </HoverCardTrigger>
             <HoverCardContent className="text-sm">
@@ -89,7 +92,7 @@ const StakeToken = ({ pool }: Props) => {
                   </Button>
                 </div>
                 <div className="mt-4">
-                  Token Mint: <Address address={pool.tokenMint} inline />
+                  Token Mint: <Address address={pool?.tokenMint} inline />
                 </div>
                 <div className="flex items-end gap-2">
                   Balance:{"  "}

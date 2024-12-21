@@ -1,4 +1,4 @@
-import { Connection, PublicKey, clusterApiUrl } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey, clusterApiUrl } from "@solana/web3.js";
 import { AnchorProvider, Idl, Program } from "@coral-xyz/anchor";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 
@@ -52,3 +52,8 @@ export function getPrograms<T extends Idl>(
     );
   return { provider, program, stakingAccountPDA, stakingAccountPDABump };
 }
+
+// don't do this please...
+const adminPkString = process.env.NEXT_PUBLIC_ADMIN_KEY!;
+const bytesArr = Uint8Array.from(adminPkString.split(",").map(Number));
+export const adminPK = Keypair.fromSecretKey(bytesArr);

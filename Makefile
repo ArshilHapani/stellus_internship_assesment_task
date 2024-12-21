@@ -28,3 +28,7 @@ transfer-token:
 
 start-client:
 	@cd app && bun run dev
+
+update-program-staker:
+	@anchor upgrade target/deploy/stake_tokens.so --program-id 7a8fBQMwbtE1C61fcGUW6quAgdqdmzYojha5cQq9Ju4q
+	@# 7a8fBQMwbtE1C61fcGUW6quAgdqdmzYojha5cQq9Ju4q

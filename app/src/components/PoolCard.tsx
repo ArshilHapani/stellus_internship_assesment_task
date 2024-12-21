@@ -30,21 +30,21 @@ const PoolCard = ({ poolAccount: account }: Props) => {
             <User className="text-gray-400 mr-2" />
             <div>
               <p className="text-sm text-gray-500">Admin</p>
-              <Address address={account.admin} />
+              <Address address={account?.admin} />
             </div>
           </div>
           <div className="flex items-center">
             <Banknote className="text-gray-400 mr-2" />
             <div>
               <p className="text-sm text-gray-500">Reward Rate</p>
-              <p className="font-medium">{account.rewardRate}% APY</p>
+              <p className="font-medium">{account?.rewardRate}% APY</p>
             </div>
           </div>
           <div className="flex items-center">
             <Key className="text-gray-400 mr-2" />
             <div>
               <p className="text-sm text-gray-500">Token Mint</p>
-              <Address address={account.tokenMint} />
+              <Address address={account?.tokenMint} />
             </div>
           </div>
           <div className="flex items-center">
@@ -52,7 +52,7 @@ const PoolCard = ({ poolAccount: account }: Props) => {
             <div>
               <p className="text-sm text-gray-500">Available reward</p>
               <p className="font-medium">
-                {formatBN(account.adminRewardAmount)}
+                {formatBN(account?.adminRewardAmount)}
               </p>
             </div>
           </div>
@@ -61,7 +61,7 @@ const PoolCard = ({ poolAccount: account }: Props) => {
             <div>
               <p className="text-sm text-gray-500">Min Staking Duration</p>
               <p className="font-medium">
-                {secondsToDay(Number(formatBN(account.minStakingDuration)))}{" "}
+                {secondsToDay(Number(formatBN(account?.minStakingDuration)))}{" "}
                 days
               </p>
             </div>
@@ -72,7 +72,7 @@ const PoolCard = ({ poolAccount: account }: Props) => {
             <Button
               onClick={() =>
                 openModal(
-                  `stake-pool-${account.admin.toBase58() + account.adminRewardAmount + account.rewardRate + account.tokenMint.toBase58()}`
+                  `stake-pool-${account?.admin.toBase58() + account?.adminRewardAmount + account?.rewardRate + account?.tokenMint?.toBase58()}`
                 )
               }
             >

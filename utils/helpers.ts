@@ -20,7 +20,7 @@ import keypair from "../utils/privateKey";
 
 const provider = anchor.AnchorProvider.env();
 anchor.setProvider(provider);
-const program = anchor.workspace
+export const program = anchor.workspace
   .CustomSplTokens as anchor.Program<CustomSplTokens>;
 const payer = keypair;
 
@@ -90,7 +90,7 @@ export async function transferTokens(
     .rpc();
 }
 
-const stakeProgram = anchor.workspace
+export const stakeProgram = anchor.workspace
   .StakeTokens as anchor.Program<StakeTokens>;
 export async function getStakeInfo(
   user: PublicKey,

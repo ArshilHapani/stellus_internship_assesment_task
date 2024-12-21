@@ -32,7 +32,8 @@ const stakingAccountATA = getAssociatedTokenAddressSync(
 );
 
 const APY = 5;
-const minStakingDuration = new anchor.BN(1 * 365 * 24 * 60 * 60);
+const minStakingDurationForOneDayInSec = 1 * 24 * 60 * 60;
+const minStakingDuration = new anchor.BN(minStakingDurationForOneDayInSec);
 
 (async function () {
   // Check if account exists

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type ModalType = "create-pool" | `stake-pool-${string}`;
+export type ModalType = "create-pool" | `stake-pool-${string}` | `unstake-pool-${string}`; 
 
 interface ModalState {
   type: ModalType | null;

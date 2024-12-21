@@ -25,12 +25,12 @@ export function Address({
   if (unparsedAddress instanceof PublicKey) {
     address = unparsedAddress.toBase58();
   } else {
-    address = unparsedAddress;
+    address = unparsedAddress ?? "";
   }
   const [copied, setCopied] = useState(false);
 
   const displayAddress = truncate
-    ? `${address.slice(0, 4)}...${address.slice(-4)}`
+    ? `${address?.slice(0, 4)}...${address?.slice(-4)}`
     : address;
 
   const copyToClipboard = () => {

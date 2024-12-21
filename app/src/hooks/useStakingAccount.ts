@@ -10,7 +10,6 @@ export default function useStakingAccount() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log("check");
     (async function () {
       setLoading(true);
       const userStakeData = await getAvailablePools(anchorWallet);

@@ -15,7 +15,6 @@ export default function useBalance(userATA: PublicKey) {
           userATA,
           "confirmed"
         );
-        console.log({ balance });
         setBalance(balance.value.uiAmount ?? 0);
       } catch {
       } finally {

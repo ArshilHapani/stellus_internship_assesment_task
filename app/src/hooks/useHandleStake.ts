@@ -1,19 +1,17 @@
-import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
 import { toast } from "sonner";
 
 import useAnchor from "./useAnchor";
-import { StakeTokens } from "@/lib/constant";
 
 export default function useHandleStake() {
   const wallet = useAnchorWallet();
-  const clientWallet = useWallet();
-  const { program, stakingAccountPDA } = useAnchor<StakeTokens>(wallet);
+  const { program, stakingAccountPDA } = useAnchor(wallet);
   async function stake(amount: string, tokenMint: PublicKey, admin: PublicKey) {
     try {
-      if (!wallet?.publicKey || !clientWallet) {
+      if (!wallet?.publicKey) {
         throw new Error("No wallet connected");
       }
       if (!program) {
@@ -43,7 +41,7 @@ export default function useHandleStake() {
           userStake: userStakeAccountPDA,
         })
         .rpc();
-
+      toast.success("Staked successfully!");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       console.log(e);

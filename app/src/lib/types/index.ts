@@ -9,3 +9,8 @@ export type StakingAccount = {
   adminRewardAmount: BN;
   minStakingDuration: BN;
 };
+
+export type UserStake = {
+  amount: BN;
+  startTime: BN;
+};

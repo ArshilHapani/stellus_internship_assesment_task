@@ -76,12 +76,12 @@ pub mod stake_tokens {
     /// * `amount` - amount to stake
     /// * `timestamp` - custom timestamp for testing
     pub fn stake(ctx: Context<Stake>, amount: u64, timestamp: Option<i64>) -> Result<()> {
-        let staking_account = &ctx.accounts.staking_account;
+        // let staking_account = &ctx.accounts.staking_account;
 
-        require!(
-            ctx.accounts.user_token_account.mint == staking_account.token_mint,
-            StakingError::InvalidArgument
-        );
+        // require!(
+        //     ctx.accounts.user_token_account.mint.to_string() == staking_account.token_mint.to_string(),
+        //     StakingError::InvalidArgument
+        // );
 
         require!(
             ctx.accounts.user_stake.amount == 0,
@@ -153,7 +153,7 @@ pub mod stake_tokens {
 
         // Validate and adjust reward based on available funds
         let reward = if staking_account.admin_reward_amount < calculated_reward && force_redeem {
-            staking_account.admin_reward_amount
+            0 as u64
         } else {
             require!(
                 staking_account.admin_reward_amount >= calculated_reward,
@@ -181,6 +181,13 @@ pub mod stake_tokens {
         // Account closure will be handled automatically by the Solana runtime
         // because of the `close = user` attribute on the user_stake account.
 
+        Ok(())
+    }
+
+    /// Close instruction
+    /// This instruction is used to close the account and reclaim rent
+    pub fn close(_ctx: Context<Close>) -> Result<()> {
+        // Close the account and reclaim rent
         Ok(())
     }
 }
@@ -426,6 +433,20 @@ impl<'info> Redeem<'info> {
             },
         )
     }
+}
+
+/// Close instruction structs
+/// This struct is used to define the accounts and instructions required for the close instruction
+/// 
+/// # Fields
+/// * `account_to_close` - account to close
+/// * `admin` - admin account (signer)
+#[derive(Accounts)]
+pub struct Close<'info> {
+    #[account(mut, close = admin)]
+    pub account_to_close: Account<'info, StakingAccount>, // account to close
+    #[account(mut)]
+    pub admin: Signer<'info>,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

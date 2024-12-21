@@ -252,4 +252,57 @@ describe("Test for staking tokens", function () {
         beforeRedeemStakerBalance.value.uiAmount + reward + stakedAmount
     );
   });
+
+  it("It should allow force redeeming the staked amount (`redeem` instruction)", async function () {
+    // stake again
+    const stakingAmount = new anchor.BN(1000);
+    const userBalance = await provider.connection.getTokenAccountBalance(
+      stakerTokenAccountATA
+    );
+    await program.methods
+      .stake(stakingAmount, null) // for force redeem
+      .accounts({
+        stakingAccount: stakingAccountPDA,
+        stakingTokenAccount: stakingAccountATA,
+        user: staker.publicKey,
+        userTokenAccount: stakerTokenAccountATA,
+        // @ts-ignore
+        userStake: userStakeAccountPDA,
+      })
+      .signers([staker])
+      .rpc();
+    assert(
+      userBalance.value.uiAmount - stakingAmount.toNumber() ===
+        (
+          await provider.connection.getTokenAccountBalance(
+            stakerTokenAccountATA
+          )
+        ).value.uiAmount
+    );
+    // try redeeming early and you will get no reward
+    await program.methods
+      .redeem(true)
+      .accounts({
+        stakingAccount: stakingAccountPDA,
+        // @ts-ignore
+        userStake: userStakeAccountPDA,
+        user: staker.publicKey,
+        userTokenAccount: stakerTokenAccountATA,
+        stakingTokenAccount: stakingAccountATA,
+        stakingTokenAccountOwner: stakingTokenAccountKP.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([staker, stakingTokenAccountKP])
+      .rpc();
+
+    const stakerBalanceAfterRedeem =
+      await provider.connection.getTokenAccountBalance(stakerTokenAccountATA);
+    console.log({
+      stakerBalanceAfterRedeem: stakerBalanceAfterRedeem.value.uiAmount,
+      userPreviousBalance: userBalance.value.uiAmount,
+    });
+    assert(
+      stakerBalanceAfterRedeem.value.uiAmount === userBalance.value.uiAmount
+    );
+  });
 });

@@ -10,7 +10,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatBN(n: BN) {
-  return n.toString();
+  if (n instanceof BN) return n.toString();
+  return String(n);
 }
 
 export function secondsToDay(n: number) {
@@ -54,3 +55,48 @@ export const getNetworkFromGenesisHash = async (connection: Connection) => {
       return "unknown";
   }
 };
+
+export function calculateRewards(
+  amount: BN,
+  startTime: BN,
+  apy: number
+): { daily: BN; cumulative: BN } {
+  const now = new BN(Math.floor(Date.now() / 1000));
+  const durationInDays = now.sub(startTime).div(new BN(86400)); // 86400 seconds in a day
+
+  const dailyRate = new BN(Math.floor((apy / 365) * 10000)); // APY to daily rate, scaled by 10000 for precision
+  const dailyReward = amount.mul(dailyRate).div(new BN(1000000)); // Divide by 1,000,000 to account for the 10000 scale and convert to percentage
+
+  const cumulativeReward = dailyReward.mul(durationInDays);
+
+  return { daily: dailyReward, cumulative: cumulativeReward };
+}
+
+export function formatDate(timestamp: BN): string {
+  const date = new Date(timestamp.toNumber() * 1000);
+  return date.toLocaleString();
+}
+
+export function calculateDuration(startTime: BN): string {
+  const now = Math.floor(Date.now() / 1000);
+  const durationInSeconds = now - startTime.toNumber();
+  const days = Math.floor(durationInSeconds / 86400);
+  const hours = Math.floor((durationInSeconds % 86400) / 3600);
+  const minutes = Math.floor((durationInSeconds % 3600) / 60);
+
+  return `${days}d ${hours}h ${minutes}m`;
+}
+
+export function formatPublicKey(publicKey: PublicKey): string {
+  const key = publicKey.toBase58();
+  return `${key.slice(0, 4)}...${key.slice(-4)}`;
+}
+
+export function canRegularRedeem(
+  startTime: BN,
+  minStakingDuration: BN
+): boolean {
+  const now = new BN(Math.floor(Date.now() / 1000));
+  const stakingDuration = now.sub(startTime);
+  return stakingDuration.gte(minStakingDuration);
+}
