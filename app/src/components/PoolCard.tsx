@@ -52,7 +52,7 @@ const PoolCard = ({ poolAccount: account }: Props) => {
             <div>
               <p className="text-sm text-gray-500">Available reward</p>
               <p className="font-medium">
-                {formatBN(account?.adminRewardAmount)}
+                {formatBN(account?.adminRewardAmount)} ITW
               </p>
             </div>
           </div>

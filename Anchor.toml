@@ -23,6 +23,8 @@ migrateTypesToClient = "./scripts/generateTypes.sh"
 temp = "bun run ./scripts/temp.ts"
 test = "bun run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 transferTokens = "bun run ./scripts/transferTokens.ts"
+fundPool = "bun run ./scripts/fundPool.ts"
+mintTokens = "bun run ./scripts/mintTokens.ts"
 
 [test]
 startup_wait = 5000

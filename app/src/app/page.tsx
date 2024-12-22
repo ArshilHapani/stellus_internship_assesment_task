@@ -45,7 +45,7 @@ export default function Home() {
   return (
     <div className="container min-h-screen flex justify-between flex-wrap">
       <div className="w-full md:w-1/2">
-        <h2 className="scroll-m-20 mt-10 border-b border-neutral-700 pb-2 text-2xl font-semibold tracking-tight">
+        <h2 className="scroll-m-20 mt-10 border-b  text-center border-neutral-700 pb-2 text-2xl font-semibold tracking-tight">
           Available staking pools
         </h2>
 
@@ -59,9 +59,9 @@ export default function Home() {
           )}
         </div>
       </div>
-      <div className="w-full md:w-1/2">
-        <h2 className="scroll-m-20 mt-10 border-b border-neutral-700 pb-2 text-2xl font-semibold tracking-tight">
-          My staking
+      <div className="w-full md:w-1/2 md:pl-10">
+        <h2 className="scroll-m-20 mt-10 text-center border-b border-neutral-700 pb-2 text-2xl font-semibold tracking-tight">
+          My staking&apos;s
         </h2>
         <div className="my-10 grid place-items-center">
           {loading ? (

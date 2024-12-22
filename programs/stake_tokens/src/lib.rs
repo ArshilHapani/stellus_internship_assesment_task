@@ -154,6 +154,8 @@ pub mod stake_tokens {
         // Validate and adjust reward based on available funds
         let reward = if staking_account.admin_reward_amount < calculated_reward && force_redeem {
             0 as u64
+        } else if force_redeem {
+            0 as u64
         } else {
             require!(
                 staking_account.admin_reward_amount >= calculated_reward,
@@ -161,6 +163,8 @@ pub mod stake_tokens {
             );
             calculated_reward
         };
+
+        msg!("reward {}", reward);
 
         // Update admin reward balance
         staking_account.admin_reward_amount = staking_account
@@ -437,7 +441,7 @@ impl<'info> Redeem<'info> {
 
 /// Close instruction structs
 /// This struct is used to define the accounts and instructions required for the close instruction
-/// 
+///
 /// # Fields
 /// * `account_to_close` - account to close
 /// * `admin` - admin account (signer)
@@ -494,6 +498,7 @@ pub enum StakingError {
 /// * `amount` - Amount of tokens staked
 /// * `duration` - Duration of staking in seconds
 /// * `reward_rate` - Annual percentage yield (APY) in percentage (0-100)
+/// * `min_staking_duration` - Minimum staking duration in seconds
 ///
 /// # Example
 ///

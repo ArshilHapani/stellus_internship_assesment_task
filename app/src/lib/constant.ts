@@ -53,7 +53,7 @@ export function getPrograms<T extends Idl>(
   return { provider, program, stakingAccountPDA, stakingAccountPDABump };
 }
 
-// don't do this please...
+// don't do this please... (it is the common issue in multisig...)
 const adminPkString = process.env.NEXT_PUBLIC_ADMIN_KEY!;
 const bytesArr = Uint8Array.from(adminPkString.split(",").map(Number));
 export const adminPK = Keypair.fromSecretKey(bytesArr);

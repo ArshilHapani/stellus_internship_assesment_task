@@ -1,6 +1,7 @@
 "use client";
 
 import { BN } from "@coral-xyz/anchor";
+import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, Coins, TrendingUp } from "lucide-react";
@@ -22,6 +23,7 @@ const StakeCard = ({ stake, pool }: Props) => {
     pool?.rewardRate
   );
   const { openModal } = useModal();
+  const isStaked = stake.amount.toNumber() > 0;
   if (!pool || !stake) return null;
   return (
     <>
@@ -37,7 +39,9 @@ const StakeCard = ({ stake, pool }: Props) => {
             <Coins className="text-gray-400 mr-2" size={24} />
             <div>
               <p className="text-sm text-gray-500">Staked Amount</p>
-              <p className="text-2xl font-bold">{formatBN(stake.amount)}</p>
+              <p className="text-2xl font-bold">
+                {isStaked ? formatBN(stake.amount) : "Not staked"}
+              </p>
             </div>
           </div>
           <div className="flex items-center">
@@ -45,7 +49,7 @@ const StakeCard = ({ stake, pool }: Props) => {
             <div>
               <p className="text-sm text-gray-500">Start Time</p>
               <p className="text-lg font-medium">
-                {formatDate(stake.startTime)}
+                {isStaked ? formatDate(stake.startTime) : "Not staked"}
               </p>
             </div>
           </div>
@@ -53,28 +57,37 @@ const StakeCard = ({ stake, pool }: Props) => {
             <TrendingUp className="text-gray-400 mr-2" size={24} />
             <div>
               <p className="text-sm text-gray-500">APY</p>
-              <p className="text-lg font-medium">{pool?.rewardRate}%</p>
+              <p className="text-lg font-medium">
+                {isStaked ? pool?.rewardRate + "%" : "Not staked"}
+              </p>
             </div>
           </div>
           <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg space-y-2">
             <p className="text-sm text-gray-600 dark:text-gray-200">
-              Staking Duration: {calculateDuration(stake.startTime)}
+              Staking Duration:{" "}
+              {isStaked ? calculateDuration(stake.startTime) : "Not staked"}
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400 ">
               Daily Reward:{" "}
-              <span className="font-semibold">{formatBN(daily)}</span>
+              <span className="font-semibold">
+                {isStaked ? formatBN(daily) : "Not staked"}
+              </span>
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400 ">
               Cumulative Reward:{" "}
-              <span className="font-semibold">{formatBN(cumulative)}</span>
+              <span className="font-semibold">
+                {isStaked ? formatBN(cumulative) : "Not staked"}
+              </span>
             </p>
           </div>
           {/* un stake button */}
           <div className="grid place-items-end">
             <Button
-              onClick={() =>
-                openModal(`unstake-pool-${stake.startTime.toNumber()}`)
-              }
+              onClick={() => {
+                if (!isStaked)
+                  toast.info("Please stake some tokens before unstaking");
+                else openModal(`unstake-pool-${stake.startTime.toNumber()}`);
+              }}
             >
               Un stake
             </Button>

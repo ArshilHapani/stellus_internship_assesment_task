@@ -2,11 +2,13 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useState } from "react";
+import { BN } from "@coral-xyz/anchor";
 import { Info } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useAnchorWallet, useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
+import { toast } from "sonner";
 
 import { DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import {
@@ -21,9 +23,11 @@ import FormInput from "../FormInput";
 import { Skeleton } from "../ui/skeleton";
 
 import { StakingAccount } from "@/lib/types";
-import { secondsToDay } from "@/lib/utils";
+import { handleError, secondsToDay } from "@/lib/utils";
 import useHandleStake from "@/hooks/useHandleStake";
 import useBalance from "@/hooks/useBalance";
+import useAnchor from "@/hooks/useAnchor";
+import { adminPK } from "@/lib/constant";
 
 type Props = {
   pool: StakingAccount;
@@ -40,6 +44,7 @@ const StakeToken = ({ pool }: Props) => {
     formState: { errors },
   } = useForm<FormSchema>();
   const wallet = useWallet();
+  const anchorWallet = useAnchorWallet();
 
   const userATA =
     wallet && wallet.publicKey && pool
@@ -48,16 +53,63 @@ const StakeToken = ({ pool }: Props) => {
 
   const { stake } = useHandleStake();
   const [lStateLoading, setLoading] = useState(false);
+  const { customSplTokenProgram } = useAnchor(anchorWallet);
 
   const { balance, loading: loadingUserBalance } = useBalance(
     userATA as PublicKey
   );
 
   function onSubmit(data: FormSchema) {
+    if (parseFloat(balance.toString()) <= parseFloat(data.amount)) {
+      toast.warning("Insufficient balance");
+      return;
+    }
     setLoading(true);
-    stake(data.amount, pool?.tokenMint, pool?.admin).finally(() =>
-      setLoading(false)
+    toast.promise(
+      stake(data.amount, pool?.tokenMint, pool?.admin).finally(() =>
+        setLoading(false)
+      ),
+      {
+        loading: "Staking...",
+        success: "Staked successfully",
+        error: (e) => handleError(e),
+      }
     );
+  }
+  async function transferToken() {
+    if (wallet && wallet.publicKey) {
+      try {
+        setLoading(true);
+        const transferAmount = new BN(10);
+        await customSplTokenProgram?.methods
+          .transferToken(transferAmount)
+          .accounts({
+            sender: pool?.admin,
+            recipient: wallet?.publicKey,
+            mintAccount: pool?.tokenMint,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            senderTokenAccount: getAssociatedTokenAddressSync(
+              pool?.tokenMint,
+              pool?.admin
+            ),
+            recipientTokenAccount: getAssociatedTokenAddressSync(
+              pool?.tokenMint,
+              wallet?.publicKey
+            ),
+          })
+          .signers([adminPK])
+          .rpc();
+        // toast.success("Transferred successfully!");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } catch (e) {
+        throw e;
+      } finally {
+        setLoading(false);
+      }
+    }
   }
   const loading = loadingUserBalance || lStateLoading;
 
@@ -103,6 +155,19 @@ const StakeToken = ({ pool }: Props) => {
                   )}
                 </div>
               </div>
+              <Button
+                onClick={() => {
+                  toast.promise(transferToken, {
+                    loading: "Transferring 10 ITW",
+                    success: "Transferred 10 ITW successfully",
+                    error: (e) => handleError(e),
+                  });
+                }}
+                disabled={loading}
+                className="mt-4 bg-success"
+              >
+                Receive 10 ITW
+              </Button>
             </HoverCardContent>
           </HoverCard>
         </DialogDescription>

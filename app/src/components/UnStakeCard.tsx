@@ -1,6 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
+import {
+  Coins,
+  Clock,
+  TrendingUp,
+  ArrowUpRight,
+  User,
+  Key,
+  AlertTriangle,
+} from "lucide-react";
+
 import {
   Card,
   CardContent,
@@ -12,32 +23,22 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 import {
-  Coins,
-  Clock,
-  TrendingUp,
-  ArrowUpRight,
-  User,
-  Key,
-  AlertTriangle,
-} from "lucide-react";
-import {
   formatBN,
   formatDate,
   calculateRewards,
   calculateDuration,
-  formatPublicKey,
   secondsToDay,
   canRegularRedeem,
 } from "@/lib/utils";
 import { StakingAccount, UserStake } from "@/lib/types";
 import TooltipComponent from "./TooltipComponent";
 import { Checkbox } from "./ui/checkbox";
-import { toast } from "sonner";
+import { Address } from "./Address";
 
 interface ComprehensiveStakingCardProps {
   userStake: UserStake;
   stakingAccount: StakingAccount;
-  onUnstake: (forceRedeem: boolean) => Promise<void>;
+  onUnstake: (forceRedeem: boolean) => Promise<void> | void;
 }
 
 export function ComprehensiveStakingCard({
@@ -58,6 +59,10 @@ export function ComprehensiveStakingCard({
   );
 
   const handleUnstake = async () => {
+    if (userStake.amount.toNumber() === 0) {
+      toast.warning("No stake to unstake. Please stake first.");
+      return;
+    }
     if (!canRegularUnstake && !forceRedeem) {
       toast.error(
         "Force redeem is required to unstake before minimum duration"
@@ -96,7 +101,7 @@ export function ComprehensiveStakingCard({
               </div>
               <div className="flex justify-between items-center">
                 <p className="text-sm text-gray-500">Start Time</p>
-                <p className="text-sm font-medium">
+                <p className="text-sm font-medium w-[70px] text-right">
                   {formatDate(userStake.startTime)}
                 </p>
               </div>
@@ -139,9 +144,12 @@ export function ComprehensiveStakingCard({
               <div className="flex items-center space-x-2">
                 <User className="text-gray-400" size={16} />
                 <p className="text-sm text-gray-500">Admin</p>
-                <p className="text-sm font-medium">
-                  {formatPublicKey(stakingAccount.admin)}
-                </p>
+                <Address
+                  className="text-sm font-medium"
+                  address={stakingAccount.admin}
+                  inline
+                  iconClassName="h-2 w-2"
+                />
               </div>
             </TooltipComponent>
             <TooltipComponent
@@ -150,9 +158,12 @@ export function ComprehensiveStakingCard({
               <div className="flex items-center space-x-2">
                 <Key className="text-gray-400" size={16} />
                 <p className="text-sm text-gray-500">Token Mint</p>
-                <p className="text-sm font-medium">
-                  {formatPublicKey(stakingAccount.tokenMint)}
-                </p>
+                <Address
+                  className="text-sm font-medium"
+                  address={stakingAccount.tokenMint}
+                  inline
+                  iconClassName="h-2 w-2"
+                />
               </div>
             </TooltipComponent>
 

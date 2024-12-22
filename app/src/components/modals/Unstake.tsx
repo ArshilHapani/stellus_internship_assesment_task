@@ -13,6 +13,8 @@ import Modal from ".";
 import { ComprehensiveStakingCard } from "../UnStakeCard";
 import useAnchor from "@/hooks/useAnchor";
 import { adminPK } from "@/lib/constant";
+import useModal from "@/hooks/useModal";
+import { handleError } from "@/lib/utils";
 
 type Props = {
   stake: UserStake;
@@ -22,6 +24,7 @@ type Props = {
 const UnStakeModal = ({ stake, pool }: Props) => {
   const wallet = useAnchorWallet();
   const { program, stakingAccountPDA } = useAnchor(wallet);
+  const { closeModal } = useModal();
   async function unstakeTokens(forceRedeem: boolean) {
     try {
       if (program && wallet) {
@@ -52,12 +55,14 @@ const UnStakeModal = ({ stake, pool }: Props) => {
           })
           .signers([adminPK])
           .rpc();
-        toast.success("Unstaked successfully!");
+        closeModal();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
-      console.log(e);
-      toast.error(e.message);
+      throw e;
     }
   }
   return (
@@ -66,7 +71,13 @@ const UnStakeModal = ({ stake, pool }: Props) => {
       type={`unstake-pool-${stake.startTime.toNumber()}`}
     >
       <ComprehensiveStakingCard
-        onUnstake={unstakeTokens}
+        onUnstake={(f) => {
+          toast.promise(unstakeTokens(f), {
+            loading: "Unstaking...",
+            success: "Unstaked successfully",
+            error: (e) => handleError(e),
+          });
+        }}
         stakingAccount={pool}
         userStake={stake}
       />

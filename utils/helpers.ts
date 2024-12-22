@@ -18,7 +18,7 @@ import keypair from "../utils/privateKey";
 ///////// HELPER FUNCTIONS AND CONSTANTS /////////
 //////////////////////////////////////////////////
 
-const provider = anchor.AnchorProvider.env();
+export const provider = anchor.AnchorProvider.env();
 anchor.setProvider(provider);
 export const program = anchor.workspace
   .CustomSplTokens as anchor.Program<CustomSplTokens>;
@@ -68,7 +68,22 @@ export async function createAndMintToken(
     })
     .rpc();
 }
-
+export async function mintToken(
+  mintKeyPair: PublicKey,
+  ata: PublicKey,
+  mintAmount: anchor.BN
+) {
+  await program.methods
+    .mintToken(mintAmount)
+    .accounts({
+      mintAuthority: payer.publicKey,
+      recipient: payer.publicKey,
+      mintAccount: mintKeyPair,
+      // @ts-ignore
+      associatedTokenAccount: ata,
+    })
+    .rpc();
+}
 export async function transferTokens(
   mintKeyPair: PublicKey,
   recipientKeyPair: PublicKey,
@@ -144,7 +159,6 @@ export async function initializeAta(
   senderAta: PublicKey,
   receiverPk: PublicKey
 ): Promise<PublicKey> {
-  const payer = provider.wallet.publicKey;
   const ata = getAssociatedTokenAddressSync(mint.publicKey, receiverPk);
 
   // dummy transaction

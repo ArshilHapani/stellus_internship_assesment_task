@@ -1,9 +1,10 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { BN, Program } from "@coral-xyz/anchor";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { BN, Program, ProgramError } from "@coral-xyz/anchor";
+import { Connection, PublicKey, SendTransactionError } from "@solana/web3.js";
 
 import { CustomSplTokens } from "./constant";
+import { WalletSignTransactionError } from "@solana/wallet-adapter-base";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -99,4 +100,17 @@ export function canRegularRedeem(
   const now = new BN(Math.floor(Date.now() / 1000));
   const stakingDuration = now.sub(startTime);
   return stakingDuration.gte(minStakingDuration);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function handleError(e: any) {
+  if (e instanceof ProgramError) {
+    return "Program Error";
+  } else if (e instanceof WalletSignTransactionError) {
+    return e.message;
+  } else if (e instanceof SendTransactionError) {
+    return "Please check your wallet balance";
+  } else {
+    return "An error occurred please check console";
+  }
 }

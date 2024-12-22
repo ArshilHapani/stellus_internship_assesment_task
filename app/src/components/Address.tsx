@@ -13,6 +13,7 @@ interface AddressProps {
   truncate?: boolean;
   inline?: boolean;
   className?: string;
+  iconClassName?: string;
 }
 
 export function Address({
@@ -20,6 +21,7 @@ export function Address({
   truncate = true,
   inline = false,
   className,
+  iconClassName,
 }: AddressProps) {
   let address = "";
   if (unparsedAddress instanceof PublicKey) {
@@ -40,6 +42,7 @@ export function Address({
       setTimeout(() => setCopied(false), 2000);
     });
   };
+  const iconClassNameSt = cn("h-6 w-6", iconClassName);
 
   return (
     <div
@@ -57,7 +60,11 @@ export function Address({
         className={`h-6 w-6 ${inline ? "" : "self-start sm:self-auto"}`}
         onClick={copyToClipboard}
       >
-        {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+        {copied ? (
+          <Check className={iconClassNameSt} />
+        ) : (
+          <Copy className={iconClassNameSt} />
+        )}
       </Button>
     </div>
   );
