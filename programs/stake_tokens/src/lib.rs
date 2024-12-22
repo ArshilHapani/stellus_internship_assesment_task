@@ -134,7 +134,11 @@ pub mod stake_tokens {
         if !force_redeem {
             require!(
                 staking_duration >= staking_account.min_staking_duration * 1000, // Convert to milliseconds
-                StakingError::StakingDurationNotMet
+                StakingError::Staki#[account]
+                pub struct UserStake {
+                    pub amount: u64,
+                    pub start_time: i64,
+                }ngDurationNotMet
             );
         }
 
@@ -262,7 +266,6 @@ pub struct Initialize<'info> {
 
 /// Fund reward instruction structs
 /// This struct is used to define the accounts and instructions required for the fund reward instruction
-/// This instruction is used to fund the reward pool
 ///
 /// # Fields
 /// * `staking_account` - staking pool account PDA (which is created in the initialize function)

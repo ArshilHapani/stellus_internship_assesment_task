@@ -16,7 +16,7 @@ const tokenMintATA = getAssociatedTokenAddressSync(
   admin.publicKey
 );
 
-const MINT_AMOUNT = new anchor.BN(10000000); // Specify your mint amount here
+const MINT_AMOUNT = new anchor.BN(1000000); // Specify your mint amount here
 
 const program = anchor.workspace
   .CustomSplTokens as anchor.Program<CustomSplTokens>;
@@ -27,7 +27,6 @@ console.log({
   tokenMintATA: tokenMintATA.toBase58(),
   payer: admin.publicKey.toBase58(),
 });
-const connection = program.provider.connection;
 (async function () {
   await program.methods
     .createTokenMint(
