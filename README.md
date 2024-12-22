@@ -1,3 +1,5 @@
+![Hero section](assets/image.png)
+
 # Setup guide
 
 ## Prerequisites
