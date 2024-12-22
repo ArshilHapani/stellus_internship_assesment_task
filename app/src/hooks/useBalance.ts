@@ -21,6 +21,7 @@ export default function useBalance(userATA: PublicKey) {
         setLoading(false);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { balance, loading };
