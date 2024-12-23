@@ -10,9 +10,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatBN(n: BN) {
+export function formatBN(n: BN | number): string {
   if (n instanceof BN) return n.toString();
-  return String(n);
+  return String(n.toFixed(4));
 }
 
 export function secondsToDay(n: number) {
@@ -56,21 +56,41 @@ export const getNetworkFromGenesisHash = async (connection: Connection) => {
       return "unknown";
   }
 };
-
 export function calculateRewards(
   amount: BN,
   startTime: BN,
   apy: number
-): { daily: BN; cumulative: BN } {
-  const now = new BN(Math.floor(Date.now() / 1000));
-  const durationInDays = now.sub(startTime).div(new BN(86400)); // 86400 seconds in a day
+): { daily: number; cumulative: number } {
+  console.log({
+    amount: amount.toString(),
+    startTime: startTime.toString(),
+    apy,
+  });
 
-  const dailyRate = new BN(Math.floor((apy / 365) * 10000)); // APY to daily rate, scaled by 10000 for precision
-  const dailyReward = amount.mul(dailyRate).div(new BN(1000000)); // Divide by 1,000,000 to account for the 10000 scale and convert to percentage
+  const amountNumber = Number(amount.toString());
+  const startTimeNumberUnixTimeStamp = Number(startTime.toString());
 
-  const cumulativeReward = dailyReward.mul(durationInDays);
+  const stakedDays = secondsToDay(
+    Date.now() / 1000 - startTimeNumberUnixTimeStamp
+  );
 
-  return { daily: dailyReward, cumulative: cumulativeReward };
+  const daily = (amountNumber * (apy / 100)) / 365;
+  const cumulative = daily * stakedDays;
+  const dailyBN = new BN(daily);
+  console.log({
+    dailyBN: dailyBN.toString(),
+  });
+  console.log({
+    daily,
+    cumulative,
+    stakedDays,
+    startTimeNumberUnixTimeStamp,
+  });
+
+  return {
+    daily,
+    cumulative,
+  };
 }
 
 export function formatDate(timestamp: BN): string {
