@@ -1,5 +1,9 @@
 ![Hero section](assets/image.png)
 
+# App demo
+
+[here](https://utfs.io/f/SBPlgACiEghfs5Kl3AtwhJvpOGuMHsqW0QlNYe94yA8Erj5x)
+
 # Setup guide
 
 ## Prerequisites
