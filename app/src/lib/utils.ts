@@ -10,9 +10,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatBN(n: BN | number): string {
+export function formatBN(n: BN | number | unknown): string {
   if (n instanceof BN) return n.toString();
-  return String(n.toFixed(4));
+  else if (n instanceof Number) return String(n?.toFixed(4));
+  else return String(n);
 }
 
 export function secondsToDay(n: number) {
