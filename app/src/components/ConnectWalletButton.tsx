@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  WalletDisconnectButton,
+  // WalletDisconnectButton,
   WalletMultiButton,
 } from "@solana/wallet-adapter-react-ui";
-import { useWallet } from "@solana/wallet-adapter-react";
+// import { useWallet } from "@solana/wallet-adapter-react";
 
 // import { Plus } from "lucide-react";
 
@@ -15,29 +15,29 @@ import { useWallet } from "@solana/wallet-adapter-react";
 // import useModal from "@/hooks/useModal";
 
 export function ConnectWalletButton() {
-  const wallet = useWallet();
+  // const wallet = useWallet();
   // const { openModal } = useModal();
-  if (wallet.connected) {
-    return (
-      <div className="flex items-center gap-x-4">
-        <WalletDisconnectButton
-          style={{
-            backgroundColor: "#0066cc",
-          }}
-        />
-        {/* <TooltipComponent title="Create new pool">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => openModal("create-pool")}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        </TooltipComponent>
-        <CreatePool /> */}
-      </div>
-    );
-  }
+  // if (wallet.connected) {
+  //   return (
+  //     <div className="flex items-center gap-x-4">
+  //       <WalletDisconnectButton
+  //         style={{
+  //           backgroundColor: "#0066cc",
+  //         }}
+  //       />
+  //       {/* <TooltipComponent title="Create new pool">
+  //         <Button
+  //           variant="outline"
+  //           size="icon"
+  //           onClick={() => openModal("create-pool")}
+  //         >
+  //           <Plus className="h-4 w-4" />
+  //         </Button>
+  //       </TooltipComponent>
+  //       <CreatePool /> */}
+  //     </div>
+  //   );
+  // }
   return (
     <WalletMultiButton
       style={{
