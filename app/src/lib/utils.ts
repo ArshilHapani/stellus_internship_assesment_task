@@ -2,9 +2,9 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { BN, Program, ProgramError } from "@coral-xyz/anchor";
 import { Connection, PublicKey, SendTransactionError } from "@solana/web3.js";
+import { WalletSignTransactionError } from "@solana/wallet-adapter-base";
 
 import { CustomSplTokens } from "./constant";
-import { WalletSignTransactionError } from "@solana/wallet-adapter-base";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -12,8 +12,8 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatBN(n: BN | number | unknown): string {
   if (n instanceof BN) return n.toString();
-  else if (n instanceof Number) return String(n?.toFixed(4));
-  else return String(n);
+  else if (n instanceof Number) return String(n.toFixed(7));
+  else return String(Number(n).toFixed(7));
 }
 
 export function secondsToDay(n: number) {
@@ -62,12 +62,6 @@ export function calculateRewards(
   startTime: BN,
   apy: number
 ): { daily: number; cumulative: number } {
-  console.log({
-    amount: amount.toString(),
-    startTime: startTime.toString(),
-    apy,
-  });
-
   const amountNumber = Number(amount.toString());
   const startTimeNumberUnixTimeStamp = Number(startTime.toString());
 
@@ -77,16 +71,6 @@ export function calculateRewards(
 
   const daily = (amountNumber * (apy / 100)) / 365;
   const cumulative = daily * stakedDays;
-  const dailyBN = new BN(daily);
-  console.log({
-    dailyBN: dailyBN.toString(),
-  });
-  console.log({
-    daily,
-    cumulative,
-    stakedDays,
-    startTimeNumberUnixTimeStamp,
-  });
 
   return {
     daily,
