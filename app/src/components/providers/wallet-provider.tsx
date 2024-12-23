@@ -11,6 +11,7 @@ import {
   BitgetWalletAdapter,
   AlphaWalletAdapter,
   CloverWalletAdapter,
+  UnsafeBurnerWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
@@ -33,6 +34,7 @@ const Wallet: FC<Props> = ({ children }) => {
       new BitgetWalletAdapter(),
       new AlphaWalletAdapter(),
       new CloverWalletAdapter(),
+      new UnsafeBurnerWalletAdapter(),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [network]
