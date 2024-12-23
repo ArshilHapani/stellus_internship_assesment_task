@@ -60,7 +60,7 @@ const StakeToken = ({ pool }: Props) => {
   );
 
   function onSubmit(data: FormSchema) {
-    if (parseFloat(balance.toString()) <= parseFloat(data.amount)) {
+    if (parseFloat(balance.toString()) < parseFloat(data.amount)) {
       toast.warning("Insufficient balance");
       return;
     }
