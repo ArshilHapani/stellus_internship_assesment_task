@@ -134,11 +134,7 @@ pub mod stake_tokens {
         if !force_redeem {
             require!(
                 staking_duration >= staking_account.min_staking_duration * 1000, // Convert to milliseconds
-                StakingError::Staki#[account]
-                pub struct UserStake {
-                    pub amount: u64,
-                    pub start_time: i64,
-                }ngDurationNotMet
+                StakingError::StakingDurationNotMet
             );
         }
 
